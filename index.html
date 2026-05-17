@@ -282,7 +282,11 @@ nav {
 .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
 
 /* Photo */
-.hero-photo-wrap { position: relative; }
+.hero-photo-wrap {
+  position: relative;
+  /* FIX: ensure the photo-tag badge isn't clipped on mobile */
+  padding-top: 18px;
+}
 .photo-frame {
   position: relative; width: 320px; height: 380px;
   border-radius: 4px; overflow: hidden; border: 1px solid var(--border2);
@@ -306,12 +310,14 @@ nav {
 .photo-corner.bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; box-shadow: -4px 4px 12px rgba(0,240,255,0.3); }
 .photo-corner.br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; box-shadow: 4px 4px 12px rgba(0,240,255,0.3); }
 .photo-tag {
-  position: absolute; top: -12px; right: -12px;
+  /* FIX: moved to absolute inside .hero-photo-wrap (which now has padding-top) */
+  position: absolute; top: 0; right: 0;
   background: var(--green); color: var(--bg);
   font-family: var(--mono); font-size: 0.6rem; font-weight: 500;
   padding: 0.35rem 0.75rem; border-radius: 2px; white-space: nowrap;
   box-shadow: 0 0 20px rgba(57,255,20,0.5);
   animation: pulse-green 2s ease-in-out infinite;
+  z-index: 5;
 }
 @keyframes pulse-green {
   0%,100%{ box-shadow: 0 0 20px rgba(57,255,20,0.5); }
@@ -603,19 +609,44 @@ footer {
 .footer-copy { font-family: var(--mono); font-size: 0.58rem; color: var(--text3); letter-spacing: 0.08em; width: 100%; margin-top: 0.4rem; }
 
 /* ═══════════════════════════════════════
-   RESPONSIVE — MOBILE
+   RESPONSIVE — TABLET (≤960px)
 ═══════════════════════════════════════ */
 @media (max-width: 960px) {
-  .hero-inner { grid-template-columns: 1fr; }
-  .hero-photo-wrap { display: flex; justify-content: center; order: -1; }
+  /* Hero switches to single column */
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 2.5rem; /* FIX: was 4rem — too much space between photo and text */
+  }
+
+  /* Photo block moves to top */
+  .hero-photo-wrap {
+    display: flex;
+    justify-content: center;
+    order: -1;
+    padding-top: 22px; /* room for the .photo-tag badge */
+  }
+
+  /* FIX: constrain photo frame size on tablet */
   .photo-frame { width: 260px; height: 310px; }
+
+  /* FIX: photo-tag repositioned relative to hero-photo-wrap, stays visible */
+  .photo-tag {
+    top: 0;
+    right: calc(50% - 130px); /* aligns to right edge of the 260px frame */
+  }
+
   .about-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
   .roles-grid { grid-template-columns: 1fr 1fr; }
   .specs-grid { grid-template-columns: 1fr 1fr; }
+
   body { cursor: auto; }
   #cursor-dot, #cursor-ring, #spotlight { display: none; }
 }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — MOBILE (≤768px)
+═══════════════════════════════════════ */
 @media (max-width: 768px) {
   .nav-links { display: none; flex-direction: column; gap: 0; }
   .nav-links.open {
@@ -627,25 +658,57 @@ footer {
   .nav-links.open a { display: block; padding: 0.9rem 2rem; font-size: 0.95rem; }
   .nav-hamburger { display: flex; }
   .nav-cta { display: none; }
-  .hero { padding: 6rem 0 3rem; }
+
+  /* FIX: hero padding — give enough top room for fixed nav + photo badge */
+  .hero { padding: 6.5rem 0 3rem; min-height: auto; }
+
   .wrap { padding: 0 1.2rem; }
   .section { padding: 3.5rem 0; }
   .roles-grid { grid-template-columns: 1fr; }
   .specs-grid { grid-template-columns: 1fr 1fr; }
+
+  /* FIX: hero eyebrow font size on mobile */
+  .hero-eyebrow { font-size: 0.62rem; }
+
+  /* FIX: role badge wraps cleanly */
+  .hero-role-badge { flex-wrap: wrap; }
+  .hero-role-text { font-size: 0.78rem; }
 }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — SMALL MOBILE (≤560px)
+═══════════════════════════════════════ */
 @media (max-width: 560px) {
   .hero h1 { font-size: 2.8rem; }
   .projects-grid { grid-template-columns: 1fr; }
   .skills-grid { grid-template-columns: repeat(2, 1fr); }
   .specs-grid { grid-template-columns: 1fr; }
-  .hero-inner { gap: 2rem; }
+
+  /* FIX: tighter gap between photo and text on small screens */
+  .hero-inner { gap: 1.8rem; }
+
+  /* FIX: slightly smaller photo frame */
   .photo-frame { width: 240px; height: 285px; }
-  .photo-tag { font-size: 0.55rem; padding: 0.28rem 0.6rem; top: -10px; right: -8px; }
+
+  /* FIX: photo-tag aligned to right edge of 240px frame */
+  .photo-tag {
+    font-size: 0.55rem;
+    padding: 0.28rem 0.6rem;
+    top: 0;
+    right: calc(50% - 120px);
+  }
+
+  /* FIX: hero-photo-wrap padding matches badge height */
+  .hero-photo-wrap { padding-top: 20px; }
+
   .hero-ctas { flex-direction: column; }
   .hero-ctas .btn-neon { text-align: center; justify-content: center; }
   .section-title { font-size: clamp(2rem, 9vw, 2.8rem); }
   .socials-grid { gap: 0.5rem; }
   .social-btn { font-size: 0.75rem; padding: 0.5rem 0.85rem; }
+
+  /* FIX: hero desc max-width on small screens */
+  .hero-desc { font-size: 0.88rem; max-width: 100%; }
 }
 </style>
 </head>
@@ -712,6 +775,7 @@ footer {
       </div>
 
       <div class="hero-photo-wrap reveal-right">
+        <div class="photo-tag">● OPEN TO OPPORTUNITIES</div>
         <div class="photo-frame">
           <img
             src="https://scontent.fceb1-5.fna.fbcdn.net/v/t39.30808-6/628422634_4304778509802147_806269376065897769_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeH2V5QkSjjFz9oLASjTt63SQ3cx0Z86tlxDdzHRnzq2XKLi3fQAUGcp5L4WvufcpKXrDyXSLkRjsDafa9hQoi4m&_nc_ohc=s3HNZOsfCywQ7kNvwF5v8v4&_nc_oc=AdqfvodDe1FwAo-C8_EXHNzwE4aTN4Xuj0Xa2vTe9ePj-noieErSmEeOGSNg459aRHDXHQHA-sZ8Nv553_KDjAbH&_nc_zt=23&_nc_ht=scontent.fceb1-5.fna&_nc_gid=lwFMFnC_nf2k-dzGfrL3CQ&_nc_ss=7b2a8&oh=00_Af4Vs5eYWY3ySzwQyBpJQgJ7-S79ttljTqm4ivubxA-QBQ&oe=6A0F0A38"
@@ -728,7 +792,6 @@ footer {
             // STATUS: AVAILABLE
           </div>
         </div>
-        <div class="photo-tag">● OPEN TO OPPORTUNITIES</div>
       </div>
     </div>
   </div>
